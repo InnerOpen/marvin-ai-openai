@@ -57,6 +57,11 @@ provider row with the endpoint and `api_version` in its metadata.
 (`gpt-4o-2024-08-06`) takes its base id's price; a model that isn't listed has no estimate, and Marvin
 shows the run as unpriced rather than free. A new price is a release of this package, not of Marvin.
 
+**Prompt caching.** OpenAI caches a repeated prompt prefix on its own (prompts over 1,024 tokens) and bills the
+cached part at a tenth of the input rate. The usage reports it (`cached_prompt_tokens`, from
+`input_tokens_details.cached_tokens` / `prompt_tokens_details.cached_tokens`) and every price here carries the
+cached rate, so Marvin's estimate matches the bill instead of charging the whole prompt at full rate.
+
 ## Develop
 
 ```sh

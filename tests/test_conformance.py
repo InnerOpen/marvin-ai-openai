@@ -83,3 +83,14 @@ def test_the_entry_points_declare_both_plugins():
 
     eps = {ep.name: ep.load() for ep in entry_points(group="marvin.ai_providers")}
     assert eps["openai"] is plugin and eps["azure"] is azure_plugin
+
+
+def test_cached_prompt_tokens_come_from_the_usage_details():
+    """OpenAI's automatic cache reports what it served inside the prompt count (input_tokens_details.cached_tokens)."""
+    from marvin_integration_sdk.ai import Message
+
+    transport = FakeOpenAIServer()
+    transport.reply_text("ok", prompt_tokens=30000, completion_tokens=4, cached=27000)
+    provider = OpenAIProvider(api_key=PLACEHOLDER_KEY, http_client=transport.client(), max_retries=0)
+    result = provider.complete([Message("user", "hi")], "gpt-5.4-mini")
+    assert (result.prompt_tokens, result.cached_prompt_tokens, result.cache_write_tokens) == (30000, 27000, 0)

@@ -17,6 +17,14 @@ import logging
 
 from marvin_integration_sdk.ai import CompletionOptions, CompletionResult, ImagePart, Message, ToolCall, ToolDefinition
 
+
+def _cached(usage, details: str) -> int:
+    """The prompt tokens OpenAI served from its automatic prompt cache (a part of the prompt count): the Responses API
+    reports them under ``input_tokens_details``, chat completions under ``prompt_tokens_details``."""
+    block = getattr(usage, details, None)
+    return int(getattr(block, "cached_tokens", None) or 0) if block is not None else 0
+
+
 logger = logging.getLogger(__name__)
 
 FIX_COMPLETION_TOKENS = "max_completion_tokens"  # Chat Completions: the model wants max_completion_tokens
@@ -165,6 +173,7 @@ def response_result(resp) -> CompletionResult:
         raw=resp.model_dump(),
         tool_calls=tool_calls,
         stop_reason="tool_calls" if tool_calls else (incomplete or "stop"),
+        cached_prompt_tokens=_cached(resp.usage, "input_tokens_details"),
     )
 
 
@@ -228,6 +237,7 @@ def chat_result(resp) -> CompletionResult:
         raw=resp.model_dump(),
         tool_calls=tool_calls,
         stop_reason=choice.finish_reason,
+        cached_prompt_tokens=_cached(resp.usage, "prompt_tokens_details"),
     )
 
 

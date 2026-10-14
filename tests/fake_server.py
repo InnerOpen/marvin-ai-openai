@@ -20,8 +20,9 @@ class FakeOpenAIServer(FakeTransport):
 
     # ── the kit's vocabulary ─────────────────────────────────────────────────
 
-    def reply_text(self, text: str, *, prompt_tokens: int = 11, completion_tokens: int = 7) -> None:
-        self.replies.append({"text": text, "usage": (prompt_tokens, completion_tokens)})
+    def reply_text(self, text: str, *, prompt_tokens: int = 11, completion_tokens: int = 7, cached: int = 0) -> None:
+        """`cached`: the part of the prompt OpenAI's automatic cache served, reported inside the prompt count."""
+        self.replies.append({"text": text, "usage": (prompt_tokens, completion_tokens), "cached": cached})
 
     def reply_tool_calls(self, calls: list[ToolCall], *, prompt_tokens: int = 11, completion_tokens: int = 7) -> None:
         self.replies.append({"tool_calls": list(calls), "usage": (prompt_tokens, completion_tokens)})
@@ -102,7 +103,7 @@ def _response(reply: dict, model: str) -> dict:
             "input_tokens": pt,
             "output_tokens": ct,
             "total_tokens": pt + ct,
-            "input_tokens_details": {"cached_tokens": 0},
+            "input_tokens_details": {"cached_tokens": reply.get("cached", 0)},
             "output_tokens_details": {"reasoning_tokens": 0},
         },
     }
@@ -120,5 +121,10 @@ def _chat(reply: dict, model: str) -> dict:
         "created": 0,
         "model": model,
         "choices": [{"index": 0, "finish_reason": "tool_calls" if calls else "stop", "message": message}],
-        "usage": {"prompt_tokens": pt, "completion_tokens": ct, "total_tokens": pt + ct},
+        "usage": {
+            "prompt_tokens": pt,
+            "completion_tokens": ct,
+            "total_tokens": pt + ct,
+            "prompt_tokens_details": {"cached_tokens": reply.get("cached", 0)},
+        },
     }
