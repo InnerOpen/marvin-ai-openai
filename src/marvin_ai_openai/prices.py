@@ -31,6 +31,11 @@ OPENAI_PRICES: dict[str, ModelPrice] = {
     # Image models — priced by the token usage the images API returns (input text, output image).
     "gpt-image-1": ModelPrice(input_per_1m=5.00, output_per_1m=40.00),
     "gpt-image-1-mini": ModelPrice(input_per_1m=2.00, output_per_1m=8.00),
+    # The current generation (pricing page, 2026-10-14): text input $5, image output $30–32 per 1M tokens.
+    "gpt-image-1.5": ModelPrice(input_per_1m=5.00, output_per_1m=32.00),
+    "gpt-image-2": ModelPrice(input_per_1m=5.00, output_per_1m=30.00),
+    "gpt-image-2.5-flare": ModelPrice(input_per_1m=5.00, output_per_1m=30.00),
+    "gpt-image-2.5-sunburst": ModelPrice(input_per_1m=5.00, output_per_1m=30.00),
 }
 
 AZURE_PRICES: dict[str, ModelPrice] = {
