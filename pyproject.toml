@@ -1,6 +1,6 @@
 [project]
 name = "marvin-ai-openai"
-version = "0.2.0"
+version = "0.3.0"
 description = "OpenAI for Marvin: the OpenAI API (Responses), OpenAI-compatible servers and Azure OpenAI as AI provider plugins."
 readme = "README.md"
 requires-python = ">=3.11"

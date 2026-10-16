@@ -42,6 +42,7 @@ DEFAULT_API_VERSION = "2024-02-01"
 
 class AzureOpenAIProvider(AIProvider):
     provider_type = "azure"
+    logo = "azure.svg"  # the Azure mark: Marvin shows it beside the provider's name
     display_name = "Azure OpenAI"
     credentials = (
         API_KEY,

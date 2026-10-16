@@ -51,6 +51,7 @@ def openai_client(cls_name: str, **kwargs):
 
 class OpenAIProvider(AIProvider):
     provider_type = "openai"
+    logo = "openai.svg"  # the OpenAI mark: Marvin shows it beside the provider's name
     display_name = "OpenAI"
     credentials = (
         API_KEY,
