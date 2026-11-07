@@ -39,3 +39,12 @@ def test_prices_match_what_core_charged():
 def test_the_picker_suggests_chat_models_only():
     assert OpenAIProvider.default_model in OpenAIProvider.suggested_models
     assert not any("image" in m for m in OpenAIProvider.suggested_models)
+
+
+def test_image_models_are_priced_by_their_image_token_rates():
+    """gpt-image-2: $8 per 1M image input, $30 per 1M image output, $2 cached (OpenAI's pricing page); the 2.5 and 2.6 variants the same."""
+    assert OpenAIProvider.estimate_cost("gpt-image-2", 1_000_000, 1_000_000) == 38.0
+    assert OpenAIProvider.estimate_cost("gpt-image-2", 2_040, 1_372) == pytest.approx(0.016320 + 0.04116)
+    assert OpenAIProvider.estimate_cost("gpt-image-2.6-sunburst", 0, 1_000_000) == 30.0
+    assert OpenAIProvider.estimate_cost("gpt-image-1.5", 0, 1_000_000) == 32.0
+    assert OpenAIProvider.estimate_cost("gpt-image-1-mini", 1_000_000, 0) == 2.5
