@@ -14,6 +14,12 @@ def _price(input_per_1m: float, output_per_1m: float) -> ModelPrice:
     return ModelPrice(input_per_1m=input_per_1m, output_per_1m=output_per_1m, cached_input_per_1m=round(input_per_1m * 0.1, 6))
 
 
+def _image_price(image_input_per_1m: float, image_output_per_1m: float, image_cached_per_1m: float) -> ModelPrice:
+    """An image model's price. Its calls are image tokens (reference pictures in, the picture out), so the image rates are the price: OpenAI also
+    bills the text of the prompt at a lower input rate ($5 for gpt-image-2), which is a small part of a call and is not separated here."""
+    return ModelPrice(input_per_1m=image_input_per_1m, output_per_1m=image_output_per_1m, cached_input_per_1m=image_cached_per_1m)
+
+
 OPENAI_PRICES: dict[str, ModelPrice] = {
     # GPT-5 family — standard tier, from developers.openai.com/api/docs/pricing (2026-10-01).
     "gpt-5.6-sol": _price(4.00, 20.00),
@@ -35,14 +41,16 @@ OPENAI_PRICES: dict[str, ModelPrice] = {
     "gpt-4-turbo": _price(10.00, 30.00),
     "o3": _price(10.00, 40.00),
     "o4-mini": _price(1.10, 4.40),
-    # Image models — priced by the token usage the images API returns (input text, output image).
-    "gpt-image-1": _price(5.00, 40.00),
-    "gpt-image-1-mini": _price(2.00, 8.00),
-    # The current generation (pricing page, 2026-10-14): text input $5, image output $30–32 per 1M tokens.
-    "gpt-image-1.5": _price(5.00, 32.00),
-    "gpt-image-2": _price(5.00, 30.00),
-    "gpt-image-2.5-flare": _price(5.00, 30.00),
-    "gpt-image-2.5-sunburst": _price(5.00, 30.00),
+    # Image models: image-token rates from developers.openai.com/api/docs/pricing (checked 2026-11-07). gpt-image-1's are from LiteLLM's feed.
+    "gpt-image-1": _image_price(10.00, 40.00, 2.50),
+    "gpt-image-1-mini": _image_price(2.50, 8.00, 0.25),
+    "gpt-image-1.5": _image_price(8.00, 32.00, 2.00),
+    "chatgpt-image-latest": _image_price(8.00, 32.00, 2.00),
+    "gpt-image-2": _image_price(8.00, 30.00, 2.00),
+    "gpt-image-2.5-flare": _image_price(8.00, 30.00, 2.00),
+    "gpt-image-2.5-sunburst": _image_price(8.00, 30.00, 2.00),
+    "gpt-image-2.6-flare": _image_price(8.00, 30.00, 2.00),
+    "gpt-image-2.6-sunburst": _image_price(8.00, 30.00, 2.00),
 }
 
 AZURE_PRICES: dict[str, ModelPrice] = {
